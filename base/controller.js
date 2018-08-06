@@ -180,9 +180,9 @@ class BaseController {
    * @memberof BaseController
    */
   action_stacks(stack) {
-    if (stack) this.action_stack = stack
+    if (stack) __.klass.action_stack = stack
     console.log('Build Complete!');
-    return this.action_stack
+    return __.klass.action_stack
   }
 
   /**
@@ -197,11 +197,10 @@ class BaseController {
    * @memberof BaseController
    */
   build_pipeline() {
-    var before_actions_dictionary = this.before_actions_dictionary;
-    var klass = this;
-    
+    var klass = this; //__.klass;
     var pipe = {};
-    this._actions().forEach(function(action) {
+    
+    klass._actions().forEach(function(action) {
       pipe[action] = [];
       pipe[action].push(function (req, res, next){
         klass.current_url = req.originalUrl;
@@ -219,9 +218,10 @@ class BaseController {
           // console.log('- req :', req)
           console.log("==================================================================")
         }
+        __.klass = klass
         next();
       });
-      pipe[action].push(...before_actions_dictionary[action]);
+      pipe[action].push(...klass.before_actions_dictionary[action]);
       pipe[action].push(klass[action]);
     });
     
@@ -238,9 +238,10 @@ class BaseController {
    * @memberof BaseController
    */
   exports(__) {
+    console.log(this.constructor.name);
     __.title = this.resource_name;
     __.klass = this;
-    return this.build_pipeline();
+    return __.klass.build_pipeline();
   }
 }
 
