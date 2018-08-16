@@ -238,7 +238,6 @@ class BaseController {
    * @memberof BaseController
    */
   exports(__) {
-    console.log(this.constructor.name);
     __.title = this.resource_name;
     __.klass = this;
     return __.klass.build_pipeline();
