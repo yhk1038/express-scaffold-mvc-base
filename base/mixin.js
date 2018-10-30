@@ -11,9 +11,7 @@ class MixinBuilder {
       // }, this.superclass) 
   }
 }
-let mix = (superclass) => new MixinBuilder(superclass);
 
-class MixinContainer {
-    constructor(){}
-}
-module.exports = [mix, MixinContainer]
+const mix = (superclass) => new MixinBuilder(superclass);
+
+module.exports = mix

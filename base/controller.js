@@ -2,11 +2,8 @@ Array.prototype.diff = function(a) {
   return this.filter(function(i) {return a.indexOf(i) < 0;});
 };
 
-let fs = require('fs');
-let path = require('path');
-
-// var [mixin, Container] = require('./mixin');
-// var useful_methods = require('./common_methods');
+const fs = require('fs');
+const path = require('path');
 
 let [render, redirect, __] = require('./renderer');
 
