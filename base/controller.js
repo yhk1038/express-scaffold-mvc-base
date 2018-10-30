@@ -1,18 +1,17 @@
-Array.prototype.diff = function(a) {
-  return this.filter(function(i) {return a.indexOf(i) < 0;});
-};
 
 const fs = require('fs');
 const path = require('path');
 
-let [render, redirect, __] = require('./renderer');
+const [render, redirect, __] = require('./renderer');
 
 
 class BaseController {
   constructor(filename){
     this.private_methods = [];
     this._actions = function() {
-      return Object.getOwnPropertyNames(this.__proto__).diff(['constructor', 'private']).diff(this.private_methods);
+      return Object.getOwnPropertyNames(this.__proto__)
+        .filter(e => !['constructor', 'private'].includes(e))
+        .filter(e => !this.private_methods.includes(e));
     }
 
     this.class_name = this.constructor.name;
@@ -178,7 +177,7 @@ class BaseController {
    */
   action_stacks(stack) {
     if (stack) __.klass.action_stack = stack
-    console.log('Build Complete!');
+    console.log('Build Complete!', '~>', stack);
     return __.klass.action_stack
   }
 

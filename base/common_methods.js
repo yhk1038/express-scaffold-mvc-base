@@ -1,4 +1,4 @@
-var usefulMethodMixin = Base => class extends Base {
+const usefulMethodMixin = Base => class extends Base {
   to_object() {
     return JSON.parse(JSON.stringify(this))
   }

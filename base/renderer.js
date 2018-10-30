@@ -1,9 +1,8 @@
 function extract_memberVariables(args) {
-  let mem = {},
+  const mem = {},
       keys = Object.keys(args);
   
-  for (var i in keys) {
-    var key = keys[i];
+  for (let key of keys) {
     if (key != 'contentFor' && key != '_locals') {
       mem[key] = args[key]
     }
