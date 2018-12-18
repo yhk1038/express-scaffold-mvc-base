@@ -114,7 +114,7 @@ class BaseController {
       '#', req.method.toUpperCase(), [req.protocol, [req.hostname, req.url].join('')].join('://'), req.ip, "\r\n",
       '# Goto :', __.klass.current_action_full, "\r\n",
       '# Params :', req.params, "\r\n",
-      '# Body :', Object.keys(req.body));
+      '# Body :', req.body);
     next();
   }
 
