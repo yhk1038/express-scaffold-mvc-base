@@ -1,6 +1,6 @@
 {
   "name": "express-scaffold-mvc-base",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Express scaffold MVC Base (Submodule for Express scaffold MVC generator)",
   "main": "base.js",
   "scripts": {
@@ -27,7 +27,7 @@
     "url": "https://github.com/yhk1038/express-scaffold-mvc-base/issues"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
+    "chai": "^4.2.0",
     "mocha": "^5.2.0"
   },
   "dependencies": {
