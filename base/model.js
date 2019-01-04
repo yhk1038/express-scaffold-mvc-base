@@ -11,8 +11,8 @@ class BaseModel extends mixin(sugar).with(...mixin_model_stuffs) {
     attr_builder(this, props);
   }
 
-  hello() {
-    console.log('world BaseModel!');
+  get attribute_names() {
+    return Object.getOwnPropertyNames(this);
   }
 
   /**
