@@ -1,21 +1,17 @@
-Array.prototype.diff = function(a) {
-  return this.filter(function(i) {return a.indexOf(i) < 0;});
-};
 
-let fs = require('fs');
-let path = require('path');
+const fs = require('fs');
+const path = require('path');
 
-// var [mixin, Container] = require('./mixin');
-// var useful_methods = require('./common_methods');
-
-let [render, redirect, __] = require('./renderer');
+const [render, redirect, __] = require('./renderer');
 
 
 class BaseController {
   constructor(filename){
     this.private_methods = [];
     this._actions = function() {
-      return Object.getOwnPropertyNames(this.__proto__).diff(['constructor', 'private']).diff(this.private_methods);
+      return Object.getOwnPropertyNames(this.__proto__)
+        .filter(e => !['constructor', 'private'].includes(e))
+        .filter(e => !this.private_methods.includes(e));
     }
 
     this.class_name = this.constructor.name;
@@ -47,21 +43,41 @@ class BaseController {
    * @param {Array of functions} actions // middlewares
    * @memberof BaseController
    */
-  before_action(method, actions) {
-    var klass = this;
-    if (!actions || actions.length === 0) {
-      actions = klass._actions();
-    }
-    
-    if (!klass.before_actions_dictionary) {
-      klass.before_actions_dictionary = {}
-    }
+  before_action(method_name, actions) {
+    const klass = this;
+    const before_action = klass[method_name];
+
+    if (!actions || actions.length === 0) actions = klass._actions();
+    if (!klass.before_actions_dictionary) klass.before_actions_dictionary = {};
 
     actions.forEach(function(action){
-      if (!klass.before_actions_dictionary[action]) {
-        klass.before_actions_dictionary[action] = []
-      }
-      klass.before_actions_dictionary[action].push(klass[method]);
+      if (!klass.before_actions_dictionary[action]) klass.before_actions_dictionary[action] = [];
+
+      klass.before_actions_dictionary[action].push(before_action);
+    });
+    this.before_actions_dictionary = klass.before_actions_dictionary;
+  }
+
+  /**
+   * [Feature]
+   * 'skip_before_action'
+   * @description Substract defined a before_action method before main action execution
+   * 
+   * @param {function} method // a middleware
+   * @param {Array of functions} actions // middlewares
+   * @memberof BaseController
+   */
+  skip_before_action(method_name, actions) {
+    const klass = this;
+    const before_action = klass[method_name];
+
+    if (!actions || actions.length === 0) actions = klass._actions();
+    if (!klass.before_actions_dictionary) klass.before_actions_dictionary = {};
+
+    actions.forEach(function(action){
+      if (!klass.before_actions_dictionary[action]) klass.before_actions_dictionary[action] = [];
+
+      klass.before_actions_dictionary[action] = klass.before_actions_dictionary[action].filter(method => method !== before_action);
     });
     this.before_actions_dictionary = klass.before_actions_dictionary
   }
@@ -97,7 +113,8 @@ class BaseController {
     console.log("\r\n",
       '#', req.method.toUpperCase(), [req.protocol, [req.hostname, req.url].join('')].join('://'), req.ip, "\r\n",
       '# Goto :', __.klass.current_action_full, "\r\n",
-      '# Params :', req.params);
+      '# Params :', req.params, "\r\n",
+      '# Body :', req.body);
     next();
   }
 
@@ -111,10 +128,10 @@ class BaseController {
    * @param {*} next
    * @memberof BaseController
    */
-  hello(req, res, next) {
-    console.log(`Hello ${__.klass.class_name}!`);
-    next();
-  }
+  // hello(req, res, next) {
+  //   console.log(`Hello ${__.klass.class_name}!`);
+  //   next();
+  // }
 
 
 
@@ -180,8 +197,8 @@ class BaseController {
    * @memberof BaseController
    */
   action_stacks(stack) {
-    if (stack) __.klass.action_stack = stack
-    console.log('Build Complete!');
+    if (stack) __.klass.action_stack = stack;
+    console.log('Build Complete!', '>', __.klass.controllers_name);
     return __.klass.action_stack
   }
 
@@ -197,8 +214,8 @@ class BaseController {
    * @memberof BaseController
    */
   build_pipeline() {
-    var klass = this; //__.klass;
-    var pipe = {};
+    const klass = this; //__.klass;
+    const pipe = {};
     
     klass._actions().forEach(function(action) {
       pipe[action] = [];
@@ -244,4 +261,4 @@ class BaseController {
   }
 }
 
-module.exports = [BaseController, {call: [render, redirect]}, __]
+module.exports = [BaseController, {call: [render, redirect]}, __];

@@ -1,5 +1,14 @@
-class BaseModel {
-  constructor(){
+const mixin = require('./mixin');
+const [ sugar, mixin_model_stuffs ] = require('./mixin_stuff/model');
+
+const factory = require('./model_factory');
+const attr_builder = factory.attr_builder;
+
+class BaseModel extends mixin(sugar).with(...mixin_model_stuffs) {
+  constructor(props){
+    if (!props) props = {};
+    super();
+    attr_builder(this, props);
   }
 
   hello() {
@@ -59,6 +68,12 @@ class BaseModel {
   static Sync(overide, origin){
     return this.injectAllInstanceMethods(overide,
       this.injectAllStaticMethods(overide, origin));
+  }
+
+
+
+  get class() {
+    return this.__proto__.constructor;
   }
 }
 
