@@ -1,3 +1,32 @@
+class RecordList extends Array {
+    pluck(attr) {
+        return this._out(this.map(el => el[attr]));
+    }
+
+    where(condition) {
+        let result = this;
+
+        if (condition) {
+            result = result.filter(condition)
+        }
+
+        return result;
+    }
+
+    to_a() {
+        return this._out(this);
+    }
+
+    to_json() {
+        return JSON.stringify(this);
+    }
+
+    _out(result_iter) {
+        return new Array(...result_iter);
+    }
+}
+
+
 const queryStuffMixin = Base => class extends Base {
     static all(datas) {
         const klass = this;
@@ -7,7 +36,7 @@ const queryStuffMixin = Base => class extends Base {
             klass.all_data = datas.map(data => klass.one(data));
         }
 
-        return klass.all_data;
+        return new RecordList(...klass.all_data);
     }
 
 
